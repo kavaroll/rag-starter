@@ -1,0 +1,59 @@
+{
+  "family": "Kim",
+  "members": [
+    {
+      "name": "Dad",
+      "restrictions": [
+        "low-sodium"
+      ],
+      "dislikes": [
+        "very spicy"
+      ],
+      "likes": [
+        "Korean BBQ",
+        "seafood"
+      ],
+      "notes": "recovering from high blood pressure"
+    },
+    {
+      "name": "Son",
+      "age": 10,
+      "restrictions": [
+        "peanut allergy"
+      ],
+      "dislikes": [
+        "vegetables"
+      ],
+      "likes": [
+        "chicken",
+        "noodles"
+      ],
+      "notes": "picky eater"
+    },
+    {
+      "name": "Mom",
+      "restrictions": [],
+      "likes": [
+        "Korean BBQ",
+        "seafood"
+      ],
+      "dislikes": [],
+      "notes": "Enjoys spicy food, loves to cook"
+    },
+    {
+      "name": "Daughter",
+      "restrictions": [
+        "egg allergy"
+      ],
+      "likes": [
+        "chicken",
+        "noodles"
+      ],
+      "dislikes": [
+        "vegetables"
+      ],
+      "notes": "Picky eater, loves sweet foods"
+    }
+  ],
+  "last_updated": "2026-06-30"
+}

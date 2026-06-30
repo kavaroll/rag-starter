@@ -2,6 +2,8 @@ import json
 import time
 from pathlib import Path
 
+from tqdm import tqdm
+
 from app.db.chroma import get_collection
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -53,7 +55,7 @@ ids = []
 docs = []
 metas = []
 
-for i, recipe in enumerate(recipes, 1):
+for i, recipe in enumerate(tqdm(recipes, desc="Embedding recipes"), 1):
 
     ids.append(recipe["RCP_SEQ"])
     docs.append(to_document(recipe))
@@ -74,11 +76,9 @@ for i, recipe in enumerate(recipes, 1):
             metadatas=metas,
         )
 
-        print(
-            f"[{i:5d}/{len(recipes)}] "
-            f"saved {len(ids):3d} "
-            f"({time.time() - t:.2f}s) "
-            f"elapsed {time.time() - start:.1f}s"
+        tqdm.write(
+            f"[{i:5d}/{len(recipes)}] saved {len(ids):3d} "
+            f"({time.time() - t:.2f}s) elapsed {time.time() - start:.1f}s"
         )
 
         ids.clear()

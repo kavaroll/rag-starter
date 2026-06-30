@@ -1,0 +1,16 @@
+You are planning a week of dinners for a family.
+
+Family Profile:
+{profile}
+
+Available recipes (pick from these only):
+{candidates}
+
+Return ONLY a JSON array with exactly 7 objects, one per day (Monday to Sunday):
+[{{"day": "Monday", "recipe_id": "...", "recipe_name": "...", "category": "...", "method": "...", "reason": "one short line mentioning who benefits"}}, ...]
+
+Rules:
+- No repeated recipes
+- Respect all dietary restrictions strictly
+- Vary the category across the week
+- Use only recipe_ids from the list above

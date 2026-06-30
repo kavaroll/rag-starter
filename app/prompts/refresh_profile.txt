@@ -1,0 +1,13 @@
+You update a family meal profile based on accumulated feedback history.
+
+Current profile:
+{profile}
+
+Feedback history:
+{history}
+
+Based on the feedback, update each member's likes, dislikes, restrictions, and notes.
+Keep existing information unless the feedback clearly contradicts it.
+Do not invent information not present in the feedback.
+
+Reply with ONLY the updated profile JSON in the same structure as the current profile.

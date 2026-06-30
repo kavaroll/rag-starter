@@ -1,0 +1,299 @@
+[
+  {
+    "type": "recommendation",
+    "recipe_id": "seafood_arancini",
+    "recipe_name": "해물아란치니",
+    "members": [
+      "Dad",
+      "Son"
+    ],
+    "plan_id": "dinner_20260630",
+    "timestamp": "2026-06-30T14:16:19.412988+00:00"
+  },
+  {
+    "type": "recommendation",
+    "recipe_id": "green_cha_miljeon",
+    "recipe_name": "녹차와 대추밀전병",
+    "members": [
+      "Dad",
+      "Son"
+    ],
+    "plan_id": "dinner_20260630",
+    "timestamp": "2026-06-30T14:16:21.255293+00:00"
+  },
+  {
+    "type": "recommendation",
+    "recipe_id": "387",
+    "recipe_name": "오징어구이",
+    "members": [
+      "Dad",
+      "Son"
+    ],
+    "plan_id": "week1",
+    "timestamp": "2026-06-30T14:31:47.282488+00:00"
+  },
+  {
+    "type": "recommendation",
+    "recipe_id": "3274",
+    "recipe_name": "꽈리고추 닭강정",
+    "members": [
+      "Dad",
+      "Son"
+    ],
+    "plan_id": "week1",
+    "timestamp": "2026-06-30T14:31:47.283722+00:00"
+  },
+  {
+    "type": "recommendation",
+    "recipe_id": "seafood_arancini",
+    "recipe_name": "해물아란치니",
+    "members": [
+      "Dad",
+      "Son"
+    ],
+    "plan_id": "night_dinner_20260630",
+    "timestamp": "2026-06-30T14:32:36.292182+00:00"
+  },
+  {
+    "type": "recommendation",
+    "recipe_id": "samgyeonsan",
+    "recipe_name": "삼계선",
+    "members": [
+      "Mom",
+      "Daughter"
+    ],
+    "plan_id": "weekly_plan_1",
+    "timestamp": "2026-06-30T14:35:12.680617+00:00"
+  },
+  {
+    "type": "recommendation",
+    "recipe_id": "582",
+    "recipe_name": "해물아란치니",
+    "members": [
+      "Dad",
+      "Son"
+    ],
+    "plan_id": null,
+    "timestamp": "2026-06-30T14:38:32.423300+00:00"
+  },
+  {
+    "type": "profile_update",
+    "member": "Mom",
+    "changes": {
+      "added": {
+        "name": "Mom",
+        "restrictions": [],
+        "likes": [
+          "Korean BBQ",
+          "seafood"
+        ],
+        "dislikes": [],
+        "notes": "Enjoys spicy food, loves to cook"
+      }
+    },
+    "reason": "added via chat",
+    "timestamp": "2026-06-30T14:39:03.228837+00:00"
+  },
+  {
+    "type": "profile_update",
+    "member": "Daughter",
+    "changes": {
+      "added": {
+        "name": "Daughter",
+        "restrictions": [],
+        "likes": [
+          "chicken",
+          "noodles"
+        ],
+        "dislikes": [
+          "vegetables"
+        ],
+        "notes": "Picky eater, loves sweet foods"
+      }
+    },
+    "reason": "added via chat",
+    "timestamp": "2026-06-30T14:39:03.229311+00:00"
+  },
+  {
+    "type": "recommendation",
+    "recipe_id": "582",
+    "recipe_name": "해물아란치니",
+    "members": [
+      "Dad",
+      "Son",
+      "Mom",
+      "Daughter"
+    ],
+    "plan_id": null,
+    "timestamp": "2026-06-30T14:39:42.506932+00:00"
+  },
+  {
+    "type": "feedback",
+    "recipe_id": "890",
+    "recipe_name": "오징어보쌈과 저나트륨 된장소스",
+    "member": "Dad",
+    "sentiment": "disliked",
+    "note": "",
+    "timestamp": "2026-06-30T15:02:37.476731+00:00"
+  },
+  {
+    "type": "feedback",
+    "recipe_id": "561",
+    "recipe_name": "머스터드튤립치킨",
+    "member": "Son",
+    "sentiment": "liked",
+    "note": "",
+    "timestamp": "2026-06-30T15:02:41.764823+00:00"
+  },
+  {
+    "type": "feedback",
+    "recipe_id": "524",
+    "recipe_name": "해산물누들볶음",
+    "member": "Mom",
+    "sentiment": "liked",
+    "note": "",
+    "timestamp": "2026-06-30T15:02:42.929026+00:00"
+  },
+  {
+    "type": "feedback",
+    "recipe_id": "925",
+    "recipe_name": "어린이 스시",
+    "member": "Dad",
+    "sentiment": "liked",
+    "note": "",
+    "timestamp": "2026-06-30T15:02:44.018271+00:00"
+  },
+  {
+    "type": "feedback",
+    "recipe_id": "670",
+    "recipe_name": "크림소스치킨롤",
+    "member": "Dad",
+    "sentiment": "liked",
+    "note": "",
+    "timestamp": "2026-06-30T15:02:45.342031+00:00"
+  },
+  {
+    "type": "feedback",
+    "recipe_id": "1082",
+    "recipe_name": "영유아를 위한 고소한 닭꼬치",
+    "member": "Son",
+    "sentiment": "disliked",
+    "note": "",
+    "timestamp": "2026-06-30T15:02:46.437262+00:00"
+  },
+  {
+    "type": "feedback",
+    "recipe_id": "951",
+    "recipe_name": "멸치 누룽지과자",
+    "member": "Mom",
+    "sentiment": "liked",
+    "note": "",
+    "timestamp": "2026-06-30T15:02:47.720627+00:00"
+  },
+  {
+    "type": "recommendation",
+    "recipe_id": "kim_kimchi_stew",
+    "recipe_name": "매운 김치찌개",
+    "members": [
+      "Dad",
+      "Son",
+      "Mom",
+      "Daughter"
+    ],
+    "plan_id": null,
+    "timestamp": "2026-06-30T15:09:13.488578+00:00"
+  },
+  {
+    "type": "recommendation",
+    "recipe_id": "616",
+    "recipe_name": "다마고도후",
+    "members": [
+      "Dad",
+      "Son",
+      "Mom",
+      "Daughter"
+    ],
+    "plan_id": null,
+    "timestamp": "2026-06-30T15:09:54.388776+00:00"
+  },
+  {
+    "type": "profile_update",
+    "member": "Daughter",
+    "changes": {
+      "restrictions": {
+        "before": [],
+        "after": [
+          "egg allergy"
+        ]
+      },
+      "notes": {
+        "before": "Picky eater, loves sweet foods",
+        "after": "Picky eater, loves sweet foods"
+      }
+    },
+    "reason": "updated via chat",
+    "timestamp": "2026-06-30T15:10:23.491901+00:00"
+  },
+  {
+    "type": "recommendation",
+    "recipe_id": "552",
+    "recipe_name": "토마토소스닭갈비",
+    "members": [
+      "도하"
+    ],
+    "plan_id": null,
+    "timestamp": "2026-06-30T15:11:27.471484+00:00"
+  },
+  {
+    "type": "recommendation",
+    "recipe_id": "kimchi_vegetable_stew",
+    "recipe_name": "채소가 들어간 김치찌개",
+    "members": [
+      "Dad",
+      "Son",
+      "Mom",
+      "Daughter"
+    ],
+    "plan_id": null,
+    "timestamp": "2026-06-30T15:11:59.195470+00:00"
+  },
+  {
+    "type": "recommendation",
+    "recipe_id": "3274",
+    "recipe_name": "꽈리고추 닭강정",
+    "members": [
+      "Dad",
+      "Son",
+      "Mom",
+      "Daughter"
+    ],
+    "plan_id": "night_dinner",
+    "timestamp": "2026-06-30T15:27:41.105602+00:00"
+  },
+  {
+    "type": "recommendation",
+    "recipe_id": "KIM_001",
+    "recipe_name": "해산물 닭고기 국수",
+    "members": [
+      "Dad",
+      "Son",
+      "Mom",
+      "Daughter"
+    ],
+    "plan_id": null,
+    "timestamp": "2026-06-30T15:29:37.948837+00:00"
+  },
+  {
+    "type": "recommendation",
+    "recipe_id": "12345",
+    "recipe_name": "닭고기 국수 (Low-sodium version)",
+    "members": [
+      "Dad",
+      "Son",
+      "Daughter",
+      "Mom"
+    ],
+    "plan_id": null,
+    "timestamp": "2026-06-30T15:33:52.836647+00:00"
+  }
+]

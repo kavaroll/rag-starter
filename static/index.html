@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Family Meal Planner</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f5f5f5; height: 100vh; display: flex; flex-direction: column; }
+
+    header { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+    header h1 { font-size: 17px; font-weight: 600; color: #1a1a1a; display: flex; align-items: center; gap: 8px; }
+    .tabs { display: flex; gap: 4px; }
+    .tab { padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; color: #666; background: none; transition: all 0.15s; }
+    .tab.active { background: #1976d2; color: #fff; }
+    .tab:hover:not(.active) { background: #f0f0f0; }
+
+    .main { display: flex; flex: 1; overflow: hidden; }
+
+    /* sidebar */
+    .sidebar { width: 260px; background: #fff; border-right: 1px solid #e0e0e0; display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; }
+    .sidebar-section { padding: 14px 16px; border-bottom: 1px solid #f0f0f0; }
+    .sidebar-section h2 { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; margin-bottom: 10px; }
+    .member-card { background: #f9f9f9; border-radius: 8px; padding: 9px 11px; margin-bottom: 7px; }
+    .member-name { font-size: 13px; font-weight: 600; color: #1a1a1a; }
+    .member-note { font-size: 11px; color: #999; margin-top: 2px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 5px; }
+    .tag { font-size: 10px; padding: 2px 7px; border-radius: 99px; font-weight: 500; }
+    .tag-r { background: #ffeaea; color: #c0392b; }
+    .tag-l { background: #e8f5e9; color: #2e7d32; }
+    .tag-d { background: #fff3e0; color: #e65100; }
+    .history-item { font-size: 11px; color: #555; padding: 5px 0; border-bottom: 1px solid #f5f5f5; line-height: 1.4; }
+    .history-item:last-child { border: none; }
+    .hist-type { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1px; }
+    .ht-rec { color: #1976d2; } .ht-liked { color: #2e7d32; } .ht-disliked { color: #c0392b; } .ht-neutral { color: #999; }
+
+    /* content area */
+    .content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .panel { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+    .panel.active { display: flex; }
+
+    /* chat */
+    .messages { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+    .message { display: flex; gap: 9px; max-width: 78%; }
+    .message.user { align-self: flex-end; flex-direction: row-reverse; }
+    .message.assistant { align-self: flex-start; }
+    .avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+    .user .avatar { background: #1976d2; }
+    .assistant .avatar { background: #e8f5e9; }
+    .bubble { padding: 9px 13px; border-radius: 16px; font-size: 13px; line-height: 1.6; }
+    .user .bubble { background: #1976d2; color: #fff; border-bottom-right-radius: 4px; white-space: pre-wrap; }
+    .assistant .bubble { background: #fff; color: #1a1a1a; border-bottom-left-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
+    .assistant .bubble p { margin-bottom: 8px; } .assistant .bubble p:last-child { margin-bottom: 0; }
+    .assistant .bubble ul, .assistant .bubble ol { padding-left: 18px; margin-bottom: 8px; }
+    .assistant .bubble li { margin-bottom: 3px; }
+    .assistant .bubble h1, .assistant .bubble h2, .assistant .bubble h3 { font-size: 13px; font-weight: 700; margin: 10px 0 4px; }
+    .assistant .bubble hr { border: none; border-top: 1px solid #eee; margin: 10px 0; }
+    .assistant .bubble strong { font-weight: 700; }
+    .recipe-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #f0f0f0; }
+    .recipe-chip { display: inline-flex; align-items: center; gap: 5px; background: #e3f2fd; color: #1565c0; border: none; border-radius: 8px; padding: 5px 10px; font-size: 12px; font-weight: 500; cursor: pointer; transition: background 0.15s; font-family: inherit; }
+    .recipe-chip:hover { background: #bbdefb; }
+    .typing { display: flex; align-items: center; gap: 4px; padding: 10px 13px; }
+    .typing span { width: 6px; height: 6px; border-radius: 50%; background: #bbb; animation: bounce 1.2s infinite; }
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
+    .input-area { padding: 14px 24px; background: #fff; border-top: 1px solid #e0e0e0; display: flex; gap: 9px; align-items: flex-end; }
+    textarea { flex: 1; border: 1px solid #e0e0e0; border-radius: 12px; padding: 9px 13px; font-size: 13px; font-family: inherit; resize: none; outline: none; max-height: 100px; line-height: 1.5; }
+    textarea:focus { border-color: #1976d2; }
+    #send { background: #1976d2; color: #fff; border: none; border-radius: 12px; padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    #send:hover { background: #1565c0; }
+    #send:disabled { background: #b0bec5; cursor: default; }
+    .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #bbb; gap: 6px; }
+    .empty-state span { font-size: 36px; }
+    .empty-state p { font-size: 13px; }
+    .suggestions { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+    .suggestion { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 7px 13px; font-size: 12px; color: #555; cursor: pointer; transition: border-color 0.15s, color 0.15s; text-align: left; }
+    .suggestion:hover { border-color: #1976d2; color: #1976d2; }
+
+    /* weekly plan */
+    .plan-panel { flex: 1; overflow-y: auto; padding: 24px; }
+    .plan-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .plan-header h2 { font-size: 16px; font-weight: 600; color: #1a1a1a; }
+    #gen-plan { background: #1976d2; color: #fff; border: none; border-radius: 10px; padding: 9px 18px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    #gen-plan:hover { background: #1565c0; }
+    #gen-plan:disabled { background: #b0bec5; cursor: default; }
+    .plan-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+    .plan-day { background: #fff; border-radius: 12px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); display: flex; flex-direction: column; gap: 6px; }
+    .day-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #aaa; }
+    .day-recipe { font-size: 13px; font-weight: 600; color: #1a1a1a; line-height: 1.3; }
+    .day-meta { font-size: 11px; color: #888; }
+    .day-reason { font-size: 11px; color: #666; line-height: 1.4; margin-top: 4px; }
+    .view-btn { margin-top: auto; padding-top: 8px; background: none; border: 1px solid #e0e0e0; border-radius: 7px; padding: 5px 10px; font-size: 11px; color: #1976d2; cursor: pointer; font-weight: 500; transition: background 0.15s; }
+    .view-btn:hover { background: #e3f2fd; }
+    .plan-empty { text-align: center; color: #bbb; padding: 60px 0; font-size: 14px; }
+    .plan-loading { text-align: center; color: #888; padding: 60px 0; font-size: 14px; }
+    .card-feedback { margin-top: 8px; padding-top: 8px; border-top: 1px solid #f0f0f0; }
+    .fb-label { font-size: 10px; color: #aaa; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; }
+    .fb-members { display: flex; flex-wrap: wrap; gap: 4px; }
+    .fb-member { font-size: 11px; padding: 3px 8px; border-radius: 6px; border: 1px solid #e0e0e0; background: none; cursor: pointer; color: #555; transition: all 0.15s; }
+    .fb-member:hover { border-color: #1976d2; color: #1976d2; }
+    .fb-thumbs { display: flex; gap: 4px; align-items: center; font-size: 11px; color: #555; }
+    .fb-thumb { font-size: 15px; background: none; border: none; cursor: pointer; padding: 0 2px; opacity: 0.6; transition: opacity 0.15s, transform 0.15s; }
+    .fb-thumb:hover { opacity: 1; transform: scale(1.2); }
+    .fb-done { font-size: 11px; color: #2e7d32; font-weight: 500; }
+
+    /* setup modal */
+    .setup-modal { max-width: 480px; }
+    .setup-modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .setup-modal p { font-size: 12px; color: #888; margin-bottom: 20px; }
+    .setup-field { margin-bottom: 12px; }
+    .setup-field label { display: block; font-size: 11px; font-weight: 600; color: #666; margin-bottom: 4px; }
+    .setup-field input { width: 100%; border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px 11px; font-size: 13px; outline: none; font-family: inherit; }
+    .setup-field input:focus { border-color: #1976d2; }
+    .setup-member { background: #f9f9f9; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; }
+    .setup-member-row { display: flex; gap: 8px; align-items: center; }
+    .setup-member-row input { flex: 1; }
+    .setup-member input { border: 1px solid #e0e0e0; border-radius: 6px; padding: 6px 10px; font-size: 12px; outline: none; font-family: inherit; width: 100%; }
+    .setup-member input:focus { border-color: #1976d2; }
+    .setup-actions { display: flex; gap: 8px; margin-top: 16px; }
+    .btn-add { background: none; border: 1px dashed #ccc; border-radius: 8px; padding: 8px; font-size: 12px; color: #888; cursor: pointer; width: 100%; margin-bottom: 4px; }
+    .btn-add:hover { border-color: #1976d2; color: #1976d2; }
+    .btn-save { background: #1976d2; color: #fff; border: none; border-radius: 8px; padding: 9px 20px; font-size: 13px; font-weight: 600; cursor: pointer; flex: 1; }
+    .btn-save:hover { background: #1565c0; }
+
+    /* modal */
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; padding: 24px; }
+    .modal-bg.open { display: flex; }
+    .modal { background: #fff; border-radius: 16px; max-width: 560px; width: 100%; max-height: 80vh; overflow-y: auto; padding: 24px; position: relative; }
+    .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 20px; cursor: pointer; color: #888; line-height: 1; }
+    .modal h3 { font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+    .modal-meta { font-size: 12px; color: #888; margin-bottom: 16px; }
+    .modal-body { font-size: 13px; color: #333; white-space: pre-wrap; line-height: 1.8; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🍽️ Family Meal Planner</h1>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('chat')">Chat</button>
+    <button class="tab" onclick="switchTab('plan')">Weekly Plan</button>
+  </div>
+</header>
+
+<div class="main">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <h2>Family</h2>
+      <div id="profile-list">Loading…</div>
+    </div>
+    <div class="sidebar-section">
+      <h2>Recent Activity</h2>
+      <div id="history-list">Loading…</div>
+    </div>
+  </aside>
+
+  <div class="content">
+
+    <!-- Chat panel -->
+    <div class="panel active" id="panel-chat" style="flex-direction:column;">
+      <div class="messages" id="messages">
+        <div class="empty-state" id="empty-state">
+          <span>👨‍👩‍👧‍👦</span>
+          <p>Ask me anything about meals for your family.</p>
+          <div class="suggestions">
+            <button class="suggestion" onclick="sendSuggestion(this)">What should we have for dinner tonight?</button>
+            <button class="suggestion" onclick="sendSuggestion(this)">Something quick and easy for the kids</button>
+            <button class="suggestion" onclick="sendSuggestion(this)">We had 해물아란치니 and my son loved it</button>
+          </div>
+        </div>
+      </div>
+      <div class="input-area">
+        <textarea id="input" rows="1" placeholder="Ask for a recommendation, share feedback…"></textarea>
+        <button id="send" onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+    <!-- Weekly plan panel -->
+    <div class="panel" id="panel-plan">
+      <div class="plan-panel">
+        <div class="plan-header">
+          <h2>This Week's Dinners</h2>
+          <button id="gen-plan" onclick="generatePlan()">Generate Plan</button>
+        </div>
+        <div id="plan-content">
+          <div class="plan-empty">Click "Generate Plan" to build a personalised weekly menu.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Setup modal -->
+<div class="modal-bg" id="setup-modal">
+  <div class="modal setup-modal">
+    <h3>👨‍👩‍👧‍👦 Set up your family</h3>
+    <p>Your info stays in this browser only — nothing is sent to any server.</p>
+    <div class="setup-field">
+      <label>Family name</label>
+      <input id="setup-family" placeholder="e.g. Kim" />
+    </div>
+    <label style="font-size:11px;font-weight:600;color:#666;display:block;margin-bottom:6px">Family members</label>
+    <div id="setup-members"></div>
+    <button class="btn-add" onclick="addSetupMember()">+ Add member</button>
+    <div class="setup-actions">
+      <button class="btn-save" onclick="saveSetup()">Save & Start</button>
+    </div>
+  </div>
+</div>
+
+<!-- Recipe modal -->
+<div class="modal-bg" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <h3 id="modal-title"></h3>
+    <div class="modal-meta" id="modal-meta"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const API = '';
+let familyMembers = [];
+
+// ── localStorage helpers ──
+const LS = {
+  getProfile: () => JSON.parse(localStorage.getItem('mp_profile') || 'null'),
+  setProfile: p => { p.last_updated = new Date().toISOString().slice(0,10); localStorage.setItem('mp_profile', JSON.stringify(p)); },
+  getHistory: () => JSON.parse(localStorage.getItem('mp_history') || '[]'),
+  addEvents: evts => {
+    const h = LS.getHistory();
+    evts.forEach(e => h.push(e));
+    localStorage.setItem('mp_history', JSON.stringify(h));
+  },
+  clear: () => { localStorage.removeItem('mp_profile'); localStorage.removeItem('mp_history'); },
+};
+
+// ── Tabs ──
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+}
+
+// ── Sidebar rendering ──
+function renderProfile(data) {
+  familyMembers = data.members.map(m => m.name);
+  document.getElementById('profile-list').innerHTML = data.members.map(m => `
+    <div class="member-card">
+      <div class="member-name">${escHtml(m.name)}</div>
+      ${m.notes ? `<div class="member-note">${escHtml(m.notes)}</div>` : ''}
+      <div class="tags">
+        ${(m.restrictions||[]).map(t=>`<span class="tag tag-r">⚠ ${escHtml(t)}</span>`).join('')}
+        ${(m.likes||[]).map(t=>`<span class="tag tag-l">♥ ${escHtml(t)}</span>`).join('')}
+        ${(m.dislikes||[]).map(t=>`<span class="tag tag-d">✕ ${escHtml(t)}</span>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function renderHistory(items) {
+  const el = document.getElementById('history-list');
+  if (!items.length) { el.innerHTML = '<div style="font-size:11px;color:#ccc">No activity yet.</div>'; return; }
+  el.innerHTML = items.slice(-8).reverse().map(h => {
+    if (h.type === 'recommendation') return `<div class="history-item"><div class="hist-type ht-rec">Recommended</div>${escHtml(h.recipe_name)}</div>`;
+    if (h.type === 'feedback') return `<div class="history-item"><div class="hist-type ht-${h.sentiment}">${h.sentiment}</div>${escHtml(h.member)}: ${escHtml(h.recipe_name)}</div>`;
+    return '';
+  }).join('');
+}
+
+// ── Chat ──
+let hasMessages = false;
+
+function appendMessage(role, text) {
+  if (!hasMessages) { document.getElementById('empty-state')?.remove(); hasMessages = true; }
+  const el = document.createElement('div');
+  el.className = `message ${role}`;
+  const content = role === 'assistant' ? marked.parse(text) : escHtml(text).replace(/\n/g,'<br>');
+  el.innerHTML = `<div class="avatar">${role==='user'?'👤':'🍽️'}</div><div class="bubble">${content}</div>`;
+  document.getElementById('messages').appendChild(el);
+  el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  return el.querySelector('.bubble');
+}
+
+function appendRecipeChips(recs, bubble) {
+  const chips = document.createElement('div');
+  chips.className = 'recipe-chips';
+  chips.innerHTML = recs.map(r =>
+    `<button class="recipe-chip" onclick="viewRecipe('${escHtml(r.recipe_id)}','${escHtml(r.recipe_name)}','')">📖 ${escHtml(r.recipe_name)}</button>`
+  ).join('');
+  bubble.appendChild(chips);
+}
+
+function showTyping() {
+  if (!hasMessages) { document.getElementById('empty-state')?.remove(); hasMessages = true; }
+  const el = document.createElement('div');
+  el.className = 'message assistant'; el.id = 'typing';
+  el.innerHTML = `<div class="avatar">🍽️</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  document.getElementById('messages').appendChild(el);
+  el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
+async function sendMessage() {
+  const input = document.getElementById('input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = ''; input.style.height = 'auto';
+  document.getElementById('send').disabled = true;
+  appendMessage('user', text);
+  showTyping();
+  try {
+    const profile = LS.getProfile();
+    const history = LS.getHistory();
+    const res = await fetch(`${API}/chat`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({message: text, profile, history}),
+    });
+    const data = await res.json();
+    document.getElementById('typing')?.remove();
+    const bubble = appendMessage('assistant', data.result);
+    if (data.events?.length) { LS.addEvents(data.events); renderHistory(LS.getHistory()); }
+    if (data.profile) { LS.setProfile(data.profile); renderProfile(data.profile); }
+    // show recipe chips only when relevant
+    const idMatches = [...data.result.matchAll(/recipe[_\s]?id[:\s]+(\d+)/gi)];
+    const hasRecEvents = (data.events || []).some(e => e.type === 'recommendation');
+    const isFoodQuery = /추천|뭐먹|저녁|점심|아침|메뉴|식단|요리|반찬|음식|dinner|lunch|meal|recipe|cook/i.test(text);
+
+    if (idMatches.length) {
+      Promise.all(idMatches.map(m =>
+        fetch(`${API}/recipes/${m[1]}`).then(r => r.json()).then(r => ({
+          recipe_id: m[1], recipe_name: r.metadata?.name || m[1],
+          category: r.metadata?.category, method: r.metadata?.method,
+        }))
+      )).then(recs => appendRecipeChips(recs, bubble)).catch(() => {});
+    } else if (hasRecEvents || isFoodQuery) {
+      fetch(`${API}/recipes/search?q=${encodeURIComponent(data.result.slice(0, 300))}&n=3`)
+        .then(r => r.json())
+        .then(recs => { if (recs.length) appendRecipeChips(recs, bubble); })
+        .catch(() => {});
+    }
+  } catch { document.getElementById('typing')?.remove(); appendMessage('assistant', 'Something went wrong. Please try again.'); }
+  document.getElementById('send').disabled = false;
+  document.getElementById('input').focus();
+}
+
+function sendSuggestion(btn) { document.getElementById('input').value = btn.textContent; sendMessage(); }
+
+const textarea = document.getElementById('input');
+textarea.addEventListener('input', () => { textarea.style.height='auto'; textarea.style.height=Math.min(textarea.scrollHeight,100)+'px'; });
+textarea.addEventListener('keydown', e => { if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} });
+
+// ── Weekly Plan ──
+async function generatePlan() {
+  const btn = document.getElementById('gen-plan');
+  btn.disabled = true; btn.textContent = 'Generating…';
+  document.getElementById('plan-content').innerHTML = '<div class="plan-loading">Planning your week… this may take a moment.</div>';
+  try {
+    const profile = LS.getProfile();
+    const res = await fetch(`${API}/plan/week`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile})});
+    const days = await res.json();
+    renderPlan(days);
+  } catch { document.getElementById('plan-content').innerHTML = '<div class="plan-empty">Failed to generate plan. Please try again.</div>'; }
+  btn.disabled = false; btn.textContent = 'Regenerate';
+}
+
+function renderPlan(days) {
+  document.getElementById('plan-content').innerHTML = `
+    <div class="plan-grid">
+      ${days.map(d => {
+        const rid = escHtml(d.recipe_id);
+        const rname = escHtml(d.recipe_name);
+        const meta = escHtml([d.category, d.method].filter(Boolean).join(' · '));
+        const memberBtns = familyMembers.map(m =>
+          `<button class="fb-member" onclick="startFeedback(this,'${rid}','${rname}','${escHtml(m)}')">${m}</button>`
+        ).join('');
+        return `
+        <div class="plan-day">
+          <div class="day-label">${d.day}</div>
+          <div class="day-recipe">${d.recipe_name}</div>
+          <div class="day-meta">${meta}</div>
+          ${d.reason ? `<div class="day-reason">${d.reason}</div>` : ''}
+          <button class="view-btn" onclick="viewRecipe('${rid}','${rname}','${meta}')">View Recipe ↗</button>
+          <div class="card-feedback">
+            <div class="fb-label">How was it?</div>
+            <div class="fb-members">${memberBtns}</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function startFeedback(btn, recipeId, recipeName, member) {
+  const container = btn.closest('.fb-members');
+  container.innerHTML = `
+    <div class="fb-thumbs">
+      <span>${member}:</span>
+      <button class="fb-thumb" onclick="submitFeedback('${recipeId}','${recipeName}','${member}','liked',this)">👍</button>
+      <button class="fb-thumb" onclick="submitFeedback('${recipeId}','${recipeName}','${member}','disliked',this)">👎</button>
+    </div>`;
+}
+
+function submitFeedback(recipeId, recipeName, member, sentiment, btn) {
+  LS.addEvents([{type:'feedback', recipe_id:recipeId, recipe_name:recipeName, member, sentiment, note:'', timestamp:new Date().toISOString()}]);
+  btn.closest('.card-feedback').innerHTML = `<div class="fb-done">✓ ${escHtml(member)} · ${sentiment}</div>`;
+  renderHistory(LS.getHistory());
+}
+
+function escHtml(s) { return (s||'').replace(/'/g,"&#39;"); }
+
+// ── Recipe Modal ──
+async function viewRecipe(id, name, meta) {
+  document.getElementById('modal-title').textContent = name;
+  document.getElementById('modal-meta').textContent = meta;
+  document.getElementById('modal-body').textContent = 'Loading…';
+  document.getElementById('modal').classList.add('open');
+  try {
+    const res = await fetch(`${API}/recipes/${encodeURIComponent(id)}`);
+    const data = await res.json();
+    document.getElementById('modal-body').textContent = data.document;
+  } catch { document.getElementById('modal-body').textContent = 'Could not load recipe details.'; }
+}
+
+function closeModal(e) { if (e.target === document.getElementById('modal')) closeModalDirect(); }
+function closeModalDirect() { document.getElementById('modal').classList.remove('open'); }
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeModalDirect(); });
+
+// ── Setup modal ──
+function showSetup() { document.getElementById('setup-modal').classList.add('open'); }
+function hideSetup() { document.getElementById('setup-modal').classList.remove('open'); }
+
+function addSetupMember() {
+  const list = document.getElementById('setup-members');
+  const idx = list.children.length;
+  const div = document.createElement('div');
+  div.className = 'setup-member';
+  div.innerHTML = `
+    <div class="setup-member-row">
+      <input placeholder="Name" class="sm-name" />
+      <button onclick="this.closest('.setup-member').remove()" style="background:none;border:none;cursor:pointer;color:#aaa;font-size:16px">✕</button>
+    </div>
+    <input placeholder="Restrictions (comma-separated, e.g. low-sodium)" class="sm-restrictions" />
+    <input placeholder="Likes (e.g. seafood, chicken)" class="sm-likes" />
+    <input placeholder="Dislikes (e.g. spicy, vegetables)" class="sm-dislikes" />`;
+  list.appendChild(div);
+}
+
+function saveSetup() {
+  const family = document.getElementById('setup-family').value.trim();
+  if (!family) { alert('Please enter a family name.'); return; }
+  const memberEls = document.querySelectorAll('.setup-member');
+  if (!memberEls.length) { alert('Please add at least one family member.'); return; }
+  const members = [...memberEls].map(el => ({
+    name: el.querySelector('.sm-name').value.trim(),
+    restrictions: el.querySelector('.sm-restrictions').value.split(',').map(s=>s.trim()).filter(Boolean),
+    likes: el.querySelector('.sm-likes').value.split(',').map(s=>s.trim()).filter(Boolean),
+    dislikes: el.querySelector('.sm-dislikes').value.split(',').map(s=>s.trim()).filter(Boolean),
+    notes: '',
+  })).filter(m => m.name);
+  if (!members.length) { alert('Please enter at least one member name.'); return; }
+  const profile = {family, members};
+  LS.setProfile(profile);
+  hideSetup();
+  startApp(profile);
+}
+
+function startApp(profile) {
+  renderProfile(profile);
+  renderHistory(LS.getHistory());
+  const names = profile.members.map(m => m.name).join(', ');
+  const restrictions = profile.members.flatMap(m => (m.restrictions||[]).map(r => `**${m.name}** (${r})`)).join(', ');
+  appendMessage('assistant', `Hi! I know the **${escHtml(profile.family)} family** — ${escHtml(names)}. ${restrictions ? `I'll always respect ${restrictions}.` : ''} What would you like to eat today?`);
+}
+
+function init() {
+  const profile = LS.getProfile();
+  if (!profile) { showSetup(); return; }
+  startApp(profile);
+}
+
+init();
+</script>
+</body>
+</html>
