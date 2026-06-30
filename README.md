@@ -1,10 +1,14 @@
-# Family Meal Planner
+# Bapsang (밥상)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A RAG-based meal planning assistant that learns your family's preferences over time. Powered by a local vLLM server and ChromaDB. Personal data never leaves the browser.
+**밥상** is the Korean word for a dinner table — the spread of food set out for a family meal. This project is a RAG-based meal planning assistant that learns your family's preferences over time. Powered by a local vLLM server and ChromaDB. Personal data never leaves the browser.
 
 ## Demo
+
+**First-time setup — enter your family profile**
+
+![First-time setup](assets/add_family_profile.gif)
 
 **Ask for a dinner recommendation**
 
@@ -13,10 +17,6 @@ A RAG-based meal planning assistant that learns your family's preferences over t
 **Weekly meal plan**
 
 ![Set up weekly meal](assets/setup_weekly_meal.gif)
-
-**Add a family member**
-
-![Add family profile](assets/add_family_profile.gif)
 
 **Give feedback on a recipe**
 
@@ -58,6 +58,30 @@ Browser (localStorage)
        ▼
   {result, events, profile}  → browser applies to localStorage
 ```
+
+## Quick start
+
+```bash
+# 1. Clone and install
+git clone https://github.com/kavaroll/bapsang
+cd bapsang
+pip install -r requirements.txt
+
+# 2. Set environment variables
+cp .env.example .env
+# Edit .env: LLM_URL, LLM_MODEL, CHROMA_PATH
+
+# 3. Ingest recipe data
+python -m ingest_data.fetch
+python -m ingest_data.build_vector_db
+
+# 4. Start the app
+uvicorn app.main:app --port 8080
+```
+
+Open `http://localhost:8080` — a setup form appears on first visit. Enter your family and you're ready to chat.
+
+> **vLLM requirement:** tool calling needs `--enable-auto-tool-choice --tool-call-parser hermes`. See [kavaroll/vllm-serving-kit](https://github.com/kavaroll/vllm-serving-kit).
 
 ## Stack
 
